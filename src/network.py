@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 network.py
 ~~~~~~~~~~
@@ -61,8 +62,12 @@ class Network(object):
             for mini_batch in mini_batches:
                 self.update_mini_batch(mini_batch, eta)
             if test_data:
-                print "Epoch {0}: {1} / {2}".format(
+               print "Época {0}: {1} / {2}\n".format(
                     j, self.evaluate(test_data), n_test)
+               for x in range(0, 10):
+                    digit_test = self.evaluate_digit(test_data, x)
+                    print "   Digito {0}: {1} / {2}".format(x, digit_test['hits'], digit_test['num_tests'])
+               print "------------------------------------\n"
             else:
                 print "Epoch {0} complete".format(j)
 
@@ -130,6 +135,14 @@ class Network(object):
         """Return the vector of partial derivatives \partial C_x /
         \partial a for the output activations."""
         return (output_activations-y)
+    
+    def evaluate_digit(self, test_data, num):
+        test_results = [(np.argmax(self.feedforward(x)), y)
+                        for (x, y) in test_data]
+        hits = sum(int(x == y and x == num) for (x, y) in test_results)
+        num_tests = sum(int(x == num) for(x, y) in test_results)
+        return { 'hits': hits, 'num_tests': num_tests }
+
 
 #### Miscellaneous functions
 def sigmoid(z):
